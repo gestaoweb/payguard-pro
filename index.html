@@ -27,10 +27,18 @@
                 <p id="authSubtitle">Aceda à sua conta financeira</p>
             </div>
             <div class="auth-tabs">
-                <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthMode('login')">Entrar</button>
-                <!-- Exemplo de como o botão deve estar no index.html -->
-                <button id="btnSwitchMode" type="button">Criar Conta</button>
-            </div>
+  <button type="button" id="tabLogin" class="active">Entrar</button>
+  <button type="button" id="tabRegister">Criar Conta</button>
+</div>
+
+<form id="authForm">
+  <!-- Email e Password -->
+  <input type="email" id="authEmail" placeholder="ex: geral@empresa.pt" required>
+  <input type="password" id="authPassword" placeholder="••••••••" required>
+
+  <!-- Botão principal de submissão -->
+  <button type="submit" id="btnSubmit">Entrar</button>
+</form>
             <form id="authForm" onsubmit="handleAuth(event)">
     <div id="registerFields" style="display: none;">
         <div class="form-group">
