@@ -3,389 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayGuard Pro - Gestão Financeira Premium</title>
+    <title>PayGuard Pro - Gestão Financeira e Pagamentos em Atraso</title>
     <link rel="stylesheet" href="style.css">
     <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js para Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS para Excel/CSV -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- jsPDF para Exportação de Relatórios PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <!-- Sistema de Notificações Toast Modernas -->
-    <div id="toastContainer" class="toast-container"></div>
 
-    <!-- ECRÃ DE AUTENTICAÇÃO LOCAL -->
-    <div id="authScreen" class="auth-screen">
+    <!-- TELA DE AUTENTICAÇÃO (LOGIN / REGISTO) -->
+    <div id="authScreen" class="auth-container">
         <div class="auth-card">
-  <div class="auth-header">
-    <h2>PayGuard Pro</h2>
-    <p id="authSubtitle">Aceda à sua conta financeira</p>
-  </div>
+            <div class="auth-header">
+                <i class="fa-solid fa-wallet auth-logo"></i>
+                <h2>PayGuard Pro</h2>
+                <p id="authSubtitle">Aceda à sua conta financeira</p>
+            </div>
 
-  <!-- Botões de Alternar Modo -->
-  <div class="auth-tabs">
-    <button type="button" id="tabLogin" class="tab-btn active">Entrar</button>
-    <button type="button" id="tabRegister" class="tab-btn">Criar Conta</button>
-  </div>
+            <div class="auth-tabs">
+                <button type="button" id="tabLogin" class="tab-btn active">Entrar</button>
+                <button type="button" id="tabRegister" class="tab-btn">Criar Conta</button>
+            </div>
 
-  <!-- Formulário -->
-  <form id="authForm">
-    <div class="input-group">
-      <label>Email de Acesso</label>
-      <input type="email" id="authEmail" placeholder="ex: geral@empresa.pt" required>
-    </div>
-
-    <div class="input-group">
-      <label>Palavra-passe</label>
-      <input type="password" id="authPassword" placeholder="••••••••" required>
-    </div>
-
-    <!-- Botão Dinâmico -->
-    <button type="submit" id="btnSubmit" class="btn-primary">Entrar</button>
-  </form>
-</div>
-
-<!-- Scripts do Firebase (Compat) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<!-- Teu Script sem type="module" para evitar chatices de escopo -->
-<script src="script.js"></script>
-
-<form id="authForm">
-  <!-- Email e Password -->
-  <input type="email" id="authEmail" placeholder="ex: geral@empresa.pt" required>
-  <input type="password" id="authPassword" placeholder="••••••••" required>
-
-  <!-- Botão principal de submissão -->
-  <button type="submit" id="btnSubmit">Entrar</button>
-</form>
-            <form id="authForm" onsubmit="handleAuth(event)">
-    <div id="registerFields" style="display: none;">
-        <div class="form-group">
-            <label>Nome da Empresa</label>
-            <input type="text" id="regCompanyName" placeholder="ex: Minha Empresa, Lda">
-        </div>
-        <div class="form-group">
-            <label>NIF / Contribuinte</label>
-            <input type="text" id="regNif" placeholder="ex: 500123456">
-        </div>
-        <div class="form-group">
-            <label>Telefone</label>
-            <input type="text" id="regPhone" placeholder="ex: +351 912345678">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label id="labelEmailUser">Email de Acesso</label>
-        <input type="email" id="authEmail" placeholder="ex: geral@empresa.pt" required>
-    </div>
-    <div class="form-group">
-        <label>Palavra-passe</label>
-        <input type="password" id="authPassword" placeholder="••••••••" required>
-    </div>
-    <button type="submit" class="btn-primary auth-submit-btn" id="authSubmitBtn">Entrar</button>
-    <p id="authError" class="auth-error"></p>
-</form>
-
-    <!-- APLICAÇÃO PRINCIPAL -->
-    <div class="app-container" id="appContainer" style="display: none;">
-        <aside class="sidebar">
-            <div>
-                <div class="logo">
-                    <div class="company-avatar" id="sidebarAvatar">PG</div>
-                    <div class="company-info-text">
-                        <span id="sidebarCompanyName">PayGuard Pro</span>
-                        <span class="sub-plan">Plano Enterprise</span>
+            <form id="authForm">
+                <!-- CAMPOS EXCLUSIVOS PARA CRIAR CONTA (Ocultados no Login) -->
+                <div id="registerFields" style="display: none;">
+                    <div class="input-group">
+                        <label for="companyName">Nome da Empresa</label>
+                        <input type="text" id="companyName" placeholder="ex: Minha Empresa, Lda">
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="companyNif">NIF</label>
+                            <input type="text" id="companyNif" placeholder="ex: 500123456">
+                        </div>
+                        <div class="input-group">
+                            <label for="userName">Nome do Responsável</label>
+                            <input type="text" id="userName" placeholder="ex: Rodrigo Carvalho">
+                        </div>
                     </div>
                 </div>
-                <ul class="nav-links">
-                    <li class="active" id="navDespesas"><a href="#" onclick="switchTab('despesas')"><i class="fa-solid fa-file-invoice-dollar"></i> Despesas (A Pagar)</a></li>
-                    <li id="navReceber"><a href="#" onclick="switchTab('receber')"><i class="fa-solid fa-hand-holding-dollar"></i> Total a Receber</a></li>
-                    <li id="navHistorico"><a href="#" onclick="switchTab('historico')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico / Liquidadas</a></li>
-                </ul>
-            </div>
-            <div class="sidebar-footer">
-                <button class="btn-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i> Tema Escuro</button>
-                <div class="backup-buttons">
-                    <button class="btn-backup" onclick="exportBackupJson()" title="Backup"><i class="fa-solid fa-download"></i></button>
-                    <label class="btn-backup" title="Restaurar"><i class="fa-solid fa-upload"></i> <input type="file" id="importJsonInput" accept=".json" onchange="importBackupJson(event)" hidden></label>
-                    <button class="btn-backup" onclick="openSettingsModal()" title="Definições"><i class="fa-solid fa-gear"></i></button>
+
+                <div class="input-group">
+                    <label for="authEmail">Email de Acesso</label>
+                    <input type="email" id="authEmail" placeholder="ex: geral@empresa.pt" required>
                 </div>
-                <button class="btn-logout" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i> Terminar Sessão</button>
+
+                <div class="input-group">
+                    <label for="authPassword">Palavra-passe</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn-primary">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL (DASHBOARD APLICAÇÃO) -->
+    <div id="appDashboard" class="app-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-wallet"></i>
+                <h2 id="sidebarCompanyName">PayGuard Pro</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active" data-target="overview"><i class="fa-solid fa-chart-pie"></i> Visão Geral</a>
+                <a href="#" class="nav-link" data-target="invoices"><i class="fa-solid fa-file-invoice-dollar"></i> Faturas / Pagamentos</a>
+                <a href="#" class="nav-link" data-target="clients"><i class="fa-solid fa-users"></i> Clientes</a>
+            </nav>
+            <div class="user-session">
+                <span id="userEmailDisplay">utilizador@empresa.pt</span>
+                <button id="btnLogout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
         </aside>
 
         <main class="main-content">
-            <header class="top-bar">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="Pesquisar faturas, entidades, valores...">
-                </div>
-                <div class="top-bar-right">
-                    <div class="currency-selector">
-                        <select id="currencySelect" onchange="changeGlobalCurrency(this.value)" title="Moeda Global de Exibição">
-                            <option value="EUR">EUR (€ - Euro)</option>
-                            <option value="USD">USD ($ - Dólar)</option>
-                            <option value="GBP">GBP (£ - Libra)</option>
-                            <option value="BRL">BRL (R$ - Real)</option>
-                            <option value="CHF">CHF (Fr - Franco)</option>
-                        </select>
-                    </div>
-                    <span class="date-badge" id="currentDateBadge"></span>
-                    <div class="avatar" id="topAvatar">U</div>
-                </div>
+            <header class="top-header">
+                <h1 id="pageTitle">Painel de Controlo</h1>
+                <button id="btnNewInvoice" class="btn-primary-sm"><i class="fa-solid fa-plus"></i> Nova Fatura</button>
             </header>
 
-            <section class="dashboard">
-                <div class="health-metrics-grid">
-                    <div class="metric-pill">
-                        <i class="fa-solid fa-chart-line" style="color: var(--accent);"></i>
-                        <div>
-                            <span class="m-label">Taxa de Recebimento</span>
-                            <h4 id="collectionRate">0%</h4>
-                        </div>
+            <section class="kpi-grid">
+                <div class="kpi-card danger">
+                    <div class="kpi-info">
+                        <h3>Total em Atraso</h3>
+                        <p id="kpiOverdue">0,00 €</p>
                     </div>
-                    <div class="metric-pill">
-                        <i class="fa-solid fa-wallet" style="color: var(--success);"></i>
-                        <div>
-                            <span class="m-label">Projeção Caixa (30d)</span>
-                            <h4 id="cashFlowProj">€ 0.00</h4>
-                        </div>
-                    </div>
+                    <i class="fa-solid fa-triangle-exclamation kpi-icon"></i>
                 </div>
-
-                <div class="global-filter-bar">
-                    <div class="pill-filters" id="periodPills">
-                        <button class="pill-btn active" onclick="setPeriodFilter('todos', this)">Todo o Período</button>
-                        <button class="pill-btn" onclick="setPeriodFilter('mes', this)">Este Mês</button>
-                        <button class="pill-btn" onclick="setPeriodFilter('7dias', this)">Próximos 7 Dias</button>
-                        <button class="pill-btn" onclick="setPeriodFilter('vencidos', this)">Vencidos</button>
+                <div class="kpi-card warning">
+                    <div class="kpi-info">
+                        <h3>Pendente</h3>
+                        <p id="kpiPending">0,00 €</p>
                     </div>
-                    <div class="view-toggle-group">
-                        <button class="view-btn active" id="btnViewTable" onclick="switchViewMode('table')" title="Vista Tabela"><i class="fa-solid fa-table-list"></i></button>
-                        <button class="view-btn" id="btnViewKanban" onclick="switchViewMode('kanban')" title="Vista Kanban"><i class="fa-solid fa-columns"></i></button>
-                    </div>
+                    <i class="fa-solid fa-clock kpi-icon"></i>
                 </div>
-
-                <!-- GRÁFICO TEMPORAL DE FLUXO DE CAIXA MENSAL -->
-                <div class="chart-card-full" style="margin-bottom: 24px; background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow);">
-                    <h4>Evolução Anual de Cash Flow (Entradas vs. Saídas)</h4>
-                    <div style="position: relative; height: 180px; width: 100%;"><canvas id="cashFlowLineChart"></canvas></div>
+                <div class="kpi-card success">
+                    <div class="kpi-info">
+                        <h3>Recebido</h3>
+                        <p id="kpiPaid">0,00 €</p>
+                    </div>
+                    <i class="fa-solid fa-circle-check kpi-icon"></i>
                 </div>
+            </section>
 
-                <!-- SECÇÃO 1: DESPESAS (A PAGAR) -->
-                <div id="tabDespesas" class="tab-content">
-                    <div class="dashboard-grid-top">
-                        <div class="kpi-card kpi-pay">
-                            <span class="kpi-title"><i class="fa-solid fa-arrow-up-long"></i> Total de Despesas (A Pagar)</span>
-                            <h3 id="totalPayAmount">€ 0.00</h3>
-                            <span class="kpi-sub">Contas e faturas pendentes a fornecedores</span>
-                        </div>
-                        <div class="chart-card">
-                            <h4>Fluxo de Despesas</h4>
-                            <div class="chart-container"><canvas id="payChart"></canvas></div>
-                        </div>
-                    </div>
-
-                    <div class="action-toolbar">
-                        <button class="btn-primary" onclick="openAddForm('pagar')" style="background-color: var(--danger);">
-                            <i class="fa-solid fa-plus"></i> Adicionar Despesa
-                        </button>
-                        <label for="fileInputPay" class="btn-primary" style="background-color: var(--primary); cursor: pointer;">
-                            <i class="fa-solid fa-file-excel"></i> Importar Excel/CSV
-                        </label>
-                        <input type="file" id="fileInputPay" accept=".xlsx, .xls, .csv" onchange="handleFileUpload(event, 'pagar')" hidden>
-                        <button class="btn-secondary" id="btnExportPayments"><i class="fa-solid fa-file-arrow-down"></i> Exportar CSV</button>
-                        <button class="btn-secondary" onclick="exportPdfReport('pagar')" style="background-color: #7c3aed; color: white; border: none;"><i class="fa-solid fa-file-pdf"></i> Relatório PDF</button>
-                    </div>
-
-                    <div id="payContainerContent"></div>
+            <section class="chart-section">
+                <h3>Estado dos Recebimentos</h3>
+                <div class="chart-box">
+                    <canvas id="financialChart"></canvas>
                 </div>
+            </section>
 
-                <!-- SECÇÃO 2: TOTAL A RECEBER -->
-                <div id="tabReceber" class="tab-content" style="display: none;">
-                    <div class="dashboard-grid-top">
-                        <div class="kpi-card kpi-receive">
-                            <span class="kpi-title"><i class="fa-solid fa-arrow-down-long"></i> Total a Receber</span>
-                            <h3 id="totalReceiveAmount">€ 0.00</h3>
-                            <span class="kpi-sub" id="overdueCount">Faturas de clientes pendentes</span>
-                        </div>
-                        <div class="chart-card">
-                            <h4>Fluxo de Cobranças</h4>
-                            <div class="chart-container"><canvas id="receiveChart"></canvas></div>
-                        </div>
-                    </div>
-
-                    <div class="action-toolbar">
-                        <button class="btn-primary" onclick="openAddForm('receber')" style="background-color: var(--success);">
-                            <i class="fa-solid fa-plus"></i> Adicionar Fatura a Receber
-                        </button>
-                        <label for="fileInputReceive" class="btn-primary" style="background-color: var(--primary); cursor: pointer;">
-                            <i class="fa-solid fa-file-excel"></i> Importar Excel/CSV
-                        </label>
-                        <input type="file" id="fileInputReceive" accept=".xlsx, .xls, .csv" onchange="handleFileUpload(event, 'receber')" hidden>
-                        <button class="btn-secondary" id="btnExportList"><i class="fa-solid fa-file-arrow-down"></i> Exportar CSV</button>
-                        <button class="btn-secondary" onclick="exportPdfReport('receber')" style="background-color: #7c3aed; color: white; border: none;"><i class="fa-solid fa-file-pdf"></i> Relatório PDF</button>
-                    </div>
-
-                    <div id="receiveContainerContent"></div>
+            <section class="table-section">
+                <div class="table-header">
+                    <h3>Faturas Registadas</h3>
                 </div>
-
-                <!-- SECÇÃO 3: HISTÓRICO -->
-                <div id="tabHistorico" class="tab-content" style="display: none;">
-                    <div class="section-title"><h2><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Faturas Liquidadas</h2></div>
-                    <div class="table-container">
-                        <table id="historyTable">
-                            <thead>
-                                <tr>
-                                    <th>Tipo</th>
-                                    <th>Data Liquidação</th>
-                                    <th>Fatura</th>
-                                    <th>Entidade</th>
-                                    <th>Categoria</th>
-                                    <th>Valor</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody">
-                                <tr class="empty-row"><td colspan="7"><div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>Sem histórico registado.</p></div></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Formulário Dinâmico (Adicionar ou Editar) -->
-                <div class="card-form-container" id="addFormContainer" style="display: none; margin-top: 24px;">
-                    <h3 id="formTitle"><i class="fa-solid fa-pen-to-square"></i> Registar Fatura</h3>
-                    <form id="addInvoiceForm">
-                        <input type="hidden" id="newType">
-                        <input type="hidden" id="editIndex" value="-1">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Nº da Fatura / Ref</label>
-                                <input type="text" id="newInvoiceNo" placeholder="ex: FAC-2026-001" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Entidade (Cliente / Fornecedor)</label>
-                                <input type="text" id="newClientName" placeholder="ex: Empresa Lda" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Contacto (Email / Telemóvel)</label>
-                                <input type="text" id="newContact" placeholder="ex: geral@empresa.pt" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Categoria / Centro de Custo</label>
-                                <select id="newCategory" style="width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main); color: var(--text-main);">
-                                    <option value="Software / IT">Software / IT</option>
-                                    <option value="Arrendamento / Escritório">Arrendamento / Escritório</option>
-                                    <option value="Marketing / Publicidade">Marketing / Publicidade</option>
-                                    <option value="Salários / Colaboradores">Salários / Colaboradores</option>
-                                    <option value="Fornecedores / Matéria-prima">Fornecedores / Matéria-prima</option>
-                                    <option value="Serviços Prestados">Serviços Prestados</option>
-                                    <option value="Outros">Outros</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Moeda da Fatura</label>
-                                <select id="newInvoiceCurrency" style="width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main); color: var(--text-main);">
-                                    <option value="EUR">EUR (€ - Euro)</option>
-                                    <option value="USD">USD ($ - Dólar)</option>
-                                    <option value="GBP">GBP (£ - Libra)</option>
-                                    <option value="BRL">BRL (R$ - Real)</option>
-                                    <option value="CHF">CHF (Fr - Franco)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Valor Base</label>
-                                <input type="number" step="0.01" id="newAmount" placeholder="ex: 1500.00" required>
-                            </div>
-                            <div class="form-group" id="penaltyGroup" style="display: none;">
-                                <label>Multa / Penalización</label>
-                                <input type="number" step="0.01" id="newPenalty" value="0.00" placeholder="ex: 25.00">
-                            </div>
-                            <div class="form-group">
-                                <label>Data de Emissão</label>
-                                <input type="date" id="newIssueDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Data Limite / Vencimento</label>
-                                <input type="date" id="newDueDate" required>
-                            </div>
-                            <div class="form-group" style="grid-column: span 3;">
-                                <label>Anexar Comprovativo / Fatura (PDF ou Imagem)</label>
-                                <input type="file" id="newAttachmentFile" accept=".pdf, image/*" style="padding: 6px; border: 1px dashed var(--border);">
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-primary" id="formSubmitBtn"><i class="fa-solid fa-check"></i> Guardar</button>
-                            <button type="button" class="btn-secondary" id="btnCancelForm">Cancelar</button>
-                        </div>
-                    </form>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Valor</th>
+                                <th>Moeda</th>
+                                <th>Vencimento</th>
+                                <th>Estado</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody"></tbody>
+                    </table>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Modais -->
-    <div class="modal" id="detailsModal">
+    <!-- Modal Adicionar Fatura -->
+    <div id="invoiceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-file-invoice"></i> Detalhes da Fatura</h3>
-                <button class="close-btn" onclick="closeDetailsModal()">&times;</button>
+                <h3>Registar Fatura</h3>
+                <span class="close-modal">&times;</span>
             </div>
-            <div class="modal-body" id="detailsModalBody"></div>
-            <div class="modal-footer" id="detailsModalFooter" style="display: flex; gap: 10px; justify-content: flex-end;"></div>
+            <form id="invoiceForm">
+                <div class="input-group">
+                    <label>Nome do Cliente</label>
+                    <input type="text" id="clientName" required placeholder="Ex: Empresa ABC">
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Valor</label>
+                        <input type="number" step="0.01" id="invoiceAmount" required placeholder="150.00">
+                    </div>
+                    <div class="input-group">
+                        <label>Moeda</label>
+                        <select id="invoiceCurrency">
+                            <option value="EUR">EUR (€)</option>
+                            <option value="USD">USD ($)</option>
+                            <option value="GBP">GBP (£)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Data de Vencimento</label>
+                    <input type="date" id="dueDate" required>
+                </div>
+                <div class="input-group">
+                    <label>Estado Inicial</label>
+                    <select id="invoiceStatus">
+                        <option value="Em Atraso">Em Atraso</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Pago">Pago</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Guardar Fatura</button>
+            </form>
         </div>
     </div>
 
-    <div class="modal" id="reminderModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle"><i class="fa-solid fa-paper-plane"></i> Enviar Lembrete</h3>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Entidade:</strong> <span id="modalClientName"></span></p>
-                <p><strong>Contacto:</strong> <span id="modalClientContact"></span></p>
-                <p><strong>Fatura nº:</strong> <span id="modalInvoiceNo"></span> | <strong>Valor:</strong> <span id="modalAmount"></span></p>
-                <div class="form-group"><label for="reminderText">Mensagem:</label><textarea id="reminderText" rows="6"></textarea></div>
-            </div>
-            <div class="modal-footer" style="display: flex; gap: 10px;">
-                <button class="btn-secondary" id="copyMessageBtn" style="flex:1;"><i class="fa-solid fa-copy"></i> Copiar Texto</button>
-                <button class="btn-primary" id="sendEmailBtn" style="flex:1; background-color:#2563eb;"><i class="fa-solid fa-envelope"></i> Enviar por Email</button>
-                <button class="btn-primary" id="sendWhatsappBtn" style="flex:1; background-color:#16a34a;"><i class="fa-brands fa-whatsapp"></i> Enviar WhatsApp</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-gear"></i> Definições da Empresa</h3>
-                <button class="close-btn" onclick="closeSettingsModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group"><label>Nome da Empresa</label><input type="text" id="settingsCompanyName"></div>
-                <div class="form-group"><label>NIF / Contribuinte</label><input type="text" id="settingsNif"></div>
-                <div class="form-group"><label>Telefone</label><input type="text" id="settingsPhone"></div>
-            </div>
-            <div class="modal-footer"><button class="btn-primary" onclick="saveSettings()">Guardar Alterações</button></div>
-        </div>
-    </div>
-<!-- Firebase App (o núcleo) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<!-- Firebase Auth (autenticação) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<!-- Firebase Firestore (base de dados) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<!-- O teu ficheiro JavaScript principal -->
-<script src="script.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
