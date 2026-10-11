@@ -62,9 +62,11 @@ body { background-color: var(--bg-main); color: var(--text-main); display: flex;
 .auth-submit-btn { width: 100%; padding: 11px; margin-top: 12px; justify-content: center; }
 .auth-error { color: var(--danger); font-size: 0.8rem; text-align: center; margin-top: 10px; }
 
-/* App Layout */
-.app-container { display: flex; width: 100%; height: 100%; }
-.sidebar { width: 260px; background-color: var(--primary); color: #ffffff; display: flex; flex-direction: column; padding: 24px; justify-content: space-between; }
+/* App Layout & Mobile Toggle */
+.app-container { display: flex; width: 100%; height: 100%; position: relative; }
+.mobile-menu-toggle { display: none; position: fixed; top: 12px; left: 12px; z-index: 1100; background: var(--primary); color: #fff; border: none; width: 40px; height: 40px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; align-items: center; justify-content: center; box-shadow: var(--shadow); }
+
+.sidebar { width: 260px; background-color: var(--primary); color: #ffffff; display: flex; flex-direction: column; padding: 24px; justify-content: space-between; z-index: 1050; transition: transform 0.3s ease; }
 .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
 .company-avatar { width: 38px; height: 38px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
 .company-info-text { display: flex; flex-direction: column; overflow: hidden; }
@@ -136,9 +138,9 @@ body { background-color: var(--bg-main); color: var(--text-main); display: flex;
 .kanban-card-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
 .kanban-card-body { font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; }
 
-/* Tables */
-.table-container { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+/* Tables com Scroll Horizontal Fluído para Telemóvel */
+.table-container { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 700px; }
 th { background-color: var(--bg-main); color: var(--text-muted); font-weight: 600; padding: 14px 20px; border-bottom: 1px solid var(--border); }
 td { padding: 14px 20px; border-bottom: 1px solid var(--border); color: var(--text-main); }
 tr { cursor: pointer; }
@@ -157,8 +159,8 @@ tr:hover { background-color: rgba(0,0,0,0.01); }
 .empty-state i { font-size: 2.5rem; opacity: 0.5; }
 
 /* Modals */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 1000; }
-.modal-content { background: var(--card-bg); width: 500px; border-radius: var(--radius); overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+.modal-content { background: var(--card-bg); width: 100%; max-width: 500px; border-radius: var(--radius); overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto; }
 .modal-header { background: var(--primary); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
 .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
 .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
@@ -167,7 +169,37 @@ tr:hover { background-color: rgba(0,0,0,0.01); }
 .card-form-container { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow); }
 .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
 .form-actions { display: flex; gap: 12px; }
-    margin-bottom: 20px;
+
+/* ========================================== */
+/* MEDIA QUERIES PARA TELEMÓVEL (RESPONSIVIDADE) */
+/* ========================================== */
+@media (max-width: 1024px) {
+    .dashboard-grid-top { grid-template-columns: 1fr; }
+    .kanban-board { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
 }
 
-.close-modal { font-size: 20px; cursor: pointer; }
+@media (max-width: 768px) {
+    body { height: auto; overflow: auto; }
+    .app-container { flex-direction: column; }
+    .mobile-menu-toggle { display: flex; }
+    
+    .sidebar { position: fixed; top: 0; left: -260px; height: 100%; width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
+    .sidebar.mobile-open { transform: translateX(260px); }
+
+    .main-content { width: 100%; padding-top: 60px; }
+    .top-bar { padding: 12px 16px; padding-left: 60px; flex-direction: column; gap: 12px; align-items: stretch; }
+    .search-box { width: 100%; }
+    .top-bar-right { justify-content: space-between; }
+
+    .dashboard { padding: 16px; }
+    .health-metrics-grid { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    
+    .action-toolbar { flex-direction: column; align-items: stretch; }
+    .action-toolbar button, .action-toolbar label { width: 100%; justify-content: center; }
+
+    .global-filter-bar { flex-direction: column; align-items: stretch; gap: 12px; }
+    .pill-filters { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap; }
+    .pill-btn { white-space: nowrap; }
+}
