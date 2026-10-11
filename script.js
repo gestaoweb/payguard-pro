@@ -2,19 +2,28 @@
 // 1. CONFIGURAÇÃO DA FIREBASE (SUBSTITUIR PELAS TUAS CHAVES DO FIREBASE CONSOLE)
 // =========================================================================
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAl5lKPPJFVMctiZphR-11kzTrQSYm4170",
-  authDomain: "payguard-pro-app.firebaseapp.com",
-  projectId: "payguard-pro-app",
-  storageBucket: "payguard-pro-app.firebasestorage.app",
-  messagingSenderId: "928116444935",
-  appId: "1:928116444935:web:b055033594ba657e557fa2"
+  apiKey: "A_TUA_API_KEY",
+  authDomain: "TEU_PROJECTO.firebaseapp.com",
+  projectId: "TEU_PROJECTO",
+  storageBucket: "TEU_PROJECTO.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
 };
+
+// Inicializar o Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Tornar a função pública para o onclick do HTML funcionar sem erros
+window.switchAuthMode = function() {
+    // Teu código atual para alternar entre "Entrar" e "Criar Conta"
+};
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
