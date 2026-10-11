@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         dateBadge.innerText = new Date().toLocaleDateString('pt-PT', options);
     }
 
-    // Monitorizar estado de autenticação do Firebase
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             currentUser = user.uid;
@@ -156,6 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initCharts();
 });
 
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    sidebar.classList.toggle('mobile-open');
+}
+
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -203,7 +207,6 @@ async function handleAuth(event) {
 
             await db.collection('users').doc(uid).set({ companyName, nif, phone, email });
 
-            // Inserir dados de exemplo iniciais na Firestore
             for (const item of sampleData) {
                 await db.collection('invoices').add({ ...item, userId: uid });
             }
@@ -335,6 +338,10 @@ function switchTab(tabName) {
     if (tabName !== 'historico') {
         setTimeout(updateCharts, 50);
     }
+
+    // Fechar menu mobile ao trocar de separador em telemóveis
+    const sidebar = document.getElementById('appSidebar');
+    sidebar.classList.remove('mobile-open');
 }
 
 function openAddForm(type) {
