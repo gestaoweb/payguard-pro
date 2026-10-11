@@ -1045,3 +1045,50 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+let isLoginMode = true;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const tabLogin = document.getElementById("tabLogin");
+    const tabRegister = document.getElementById("tabRegister");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const authForm = document.getElementById("authForm");
+
+    // Alternar para Login
+    tabLogin.addEventListener("click", () => {
+        isLoginMode = true;
+        tabLogin.classList.add("active");
+        tabRegister.classList.remove("active");
+        btnSubmit.textContent = "Entrar";
+    });
+
+    // Alternar para Criar Conta
+    tabRegister.addEventListener("click", () => {
+        isLoginMode = false;
+        tabRegister.classList.add("active");
+        tabLogin.classList.remove("active");
+        btnSubmit.textContent = "Criar Conta";
+    });
+
+    // Processar Formulário (Entrar ou Registar)
+    authForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById("authEmail").value;
+        const password = document.getElementById("authPassword").value;
+
+        try {
+            if (isLoginMode) {
+                // Entrar com Firebase
+                await auth.signInWithEmailAndPassword(email, password);
+                alert("Login efetuado com sucesso!");
+            } else {
+                // Criar Conta no Firebase
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert("Conta criada com sucesso!");
+            }
+        } catch (error) {
+            alert("Erro: " + error.message);
+        }
+    });
+});
