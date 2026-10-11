@@ -14,16 +14,16 @@
     <!-- jsPDF para Exportação de Relatórios PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!-- Firebase SDKs colocados no Head para carregar antes do script principal -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <!-- Sistema de Notificações Toast Modernas -->
+    <!-- Sistema de Notificações Toast -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- ECRÃ DE AUTENTICAÇÃO (FIREBASE AUTH) -->
+    <!-- ECRÃ DE AUTENTICAÇÃO -->
     <div id="authScreen" class="auth-screen">
         <div class="auth-card" id="authCardContainer">
             <div class="auth-logo">
@@ -67,7 +67,10 @@
 
     <!-- APLICAÇÃO PRINCIPAL -->
     <div class="app-container" id="appContainer" style="display: none;">
-        <aside class="sidebar">
+        <!-- Botão Menu Mobile -->
+        <button type="button" class="mobile-menu-toggle" onclick="toggleMobileSidebar()"><i class="fa-solid fa-bars"></i></button>
+
+        <aside class="sidebar" id="appSidebar">
             <div>
                 <div class="logo">
                     <div class="company-avatar" id="sidebarAvatar">PG</div>
@@ -97,16 +100,16 @@
             <header class="top-bar">
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="Pesquisar faturas, entidades, valores...">
+                    <input type="text" id="searchInput" placeholder="Pesquisar faturas, entidades...">
                 </div>
                 <div class="top-bar-right">
                     <div class="currency-selector">
-                        <select id="currencySelect" onchange="changeGlobalCurrency(this.value)" title="Moeda Global de Exibição">
-                            <option value="EUR">EUR (€ - Euro)</option>
-                            <option value="USD">USD ($ - Dólar)</option>
-                            <option value="GBP">GBP (£ - Libra)</option>
-                            <option value="BRL">BRL (R$ - Real)</option>
-                            <option value="CHF">CHF (Fr - Franco)</option>
+                        <select id="currencySelect" onchange="changeGlobalCurrency(this.value)" title="Moeda Global">
+                            <option value="EUR">EUR (€)</option>
+                            <option value="USD">USD ($)</option>
+                            <option value="GBP">GBP (£)</option>
+                            <option value="BRL">BRL (R$)</option>
+                            <option value="CHF">CHF (Fr)</option>
                         </select>
                     </div>
                     <span class="date-badge" id="currentDateBadge"></span>
@@ -145,13 +148,13 @@
                     </div>
                 </div>
 
-                <!-- GRÁFICO TEMPORAL DE FLUXO DE CAIXA MENSAL -->
+                <!-- GRÁFICO DE CASH FLOW -->
                 <div class="chart-card-full" style="margin-bottom: 24px; background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow);">
                     <h4>Evolução Anual de Cash Flow (Entradas vs. Saídas)</h4>
                     <div style="position: relative; height: 180px; width: 100%;"><canvas id="cashFlowLineChart"></canvas></div>
                 </div>
 
-                <!-- SECÇÃO 1: DESPESAS (A PAGAR) -->
+                <!-- TAB DESPESAS -->
                 <div id="tabDespesas" class="tab-content">
                     <div class="dashboard-grid-top">
                         <div class="kpi-card kpi-pay">
@@ -180,7 +183,7 @@
                     <div id="payContainerContent"></div>
                 </div>
 
-                <!-- SECÇÃO 2: TOTAL A RECEBER -->
+                <!-- TAB RECEBER -->
                 <div id="tabReceber" class="tab-content" style="display: none;">
                     <div class="dashboard-grid-top">
                         <div class="kpi-card kpi-receive">
@@ -209,7 +212,7 @@
                     <div id="receiveContainerContent"></div>
                 </div>
 
-                <!-- SECÇÃO 3: HISTÓRICO -->
+                <!-- TAB HISTÓRICO -->
                 <div id="tabHistorico" class="tab-content" style="display: none;">
                     <div class="section-title"><h2><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Faturas Liquidadas</h2></div>
                     <div class="table-container">
@@ -232,7 +235,7 @@
                     </div>
                 </div>
 
-                <!-- Formulário Dinâmico (Adicionar ou Editar) -->
+                <!-- FORMULÁRIO DINÂMICO -->
                 <div class="card-form-container" id="addFormContainer" style="display: none; margin-top: 24px;">
                     <h3 id="formTitle"><i class="fa-solid fa-pen-to-square"></i> Registar Fatura</h3>
                     <form id="addInvoiceForm">
@@ -253,7 +256,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Categoria / Centro de Custo</label>
-                                <select id="newCategory" style="width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main); color: var(--text-main);">
+                                <select id="newCategory">
                                     <option value="Software / IT">Software / IT</option>
                                     <option value="Arrendamento / Escritório">Arrendamento / Escritório</option>
                                     <option value="Marketing / Publicidade">Marketing / Publicidade</option>
@@ -265,7 +268,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Moeda da Fatura</label>
-                                <select id="newInvoiceCurrency" style="width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-main); color: var(--text-main);">
+                                <select id="newInvoiceCurrency">
                                     <option value="EUR">EUR (€ - Euro)</option>
                                     <option value="USD">USD ($ - Dólar)</option>
                                     <option value="GBP">GBP (£ - Libra)</option>
@@ -289,7 +292,7 @@
                                 <label>Data Limite / Vencimento</label>
                                 <input type="date" id="newDueDate" required>
                             </div>
-                            <div class="form-group" style="grid-column: span 3;">
+                            <div class="form-group" style="grid-column: 1 / -1;">
                                 <label>Anexar Comprovativo / Fatura (PDF ou Imagem)</label>
                                 <input type="file" id="newAttachmentFile" accept=".pdf, image/*" style="padding: 6px; border: 1px dashed var(--border);">
                             </div>
@@ -304,7 +307,7 @@
         </main>
     </div>
 
-    <!-- Modais -->
+    <!-- MODAIS -->
     <div class="modal" id="detailsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -328,10 +331,10 @@
                 <p><strong>Fatura nº:</strong> <span id="modalInvoiceNo"></span> | <strong>Valor:</strong> <span id="modalAmount"></span></p>
                 <div class="form-group"><label for="reminderText">Mensagem:</label><textarea id="reminderText" rows="6"></textarea></div>
             </div>
-            <div class="modal-footer" style="display: flex; gap: 10px;">
-                <button type="button" class="btn-secondary" id="copyMessageBtn" style="flex:1;"><i class="fa-solid fa-copy"></i> Copiar Texto</button>
-                <button type="button" class="btn-primary" id="sendEmailBtn" style="flex:1; background-color:#2563eb;"><i class="fa-solid fa-envelope"></i> Enviar por Email</button>
-                <button type="button" class="btn-primary" id="sendWhatsappBtn" style="flex:1; background-color:#16a34a;"><i class="fa-brands fa-whatsapp"></i> Enviar WhatsApp</button>
+            <div class="modal-footer" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-secondary" id="copyMessageBtn" style="flex:1;"><i class="fa-solid fa-copy"></i> Copiar</button>
+                <button type="button" class="btn-primary" id="sendEmailBtn" style="flex:1; background-color:#2563eb;"><i class="fa-solid fa-envelope"></i> Email</button>
+                <button type="button" class="btn-primary" id="sendWhatsappBtn" style="flex:1; background-color:#16a34a;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
             </div>
         </div>
     </div>
@@ -350,6 +353,10 @@
             <div class="modal-footer"><button type="button" class="btn-primary" onclick="saveSettings()">Guardar Alterações</button></div>
         </div>
     </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
 
     <script src="script.js"></script>
 </body>
