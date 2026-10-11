@@ -1030,3 +1030,18 @@ function handleFileUpload(e, defaultType) {
     reader.readAsArrayBuffer(file);
     e.target.value = '';
 }
+
+// Aguardar o carregamento total da página
+document.addEventListener("DOMContentLoaded", () => {
+    const btnSwitch = document.getElementById("btnSwitchMode");
+    
+    if (btnSwitch) {
+        btnSwitch.addEventListener("click", () => {
+            // Lógica para alternar entre os modos de Entrar e Criar Conta
+            console.log("Botão clicado com sucesso!");
+            
+            // Exemplo: alternar texto do botão ou formulários visíveis
+            // Podes colocar aqui a tua lógica atual de alternância
+        });
+    }
+});
