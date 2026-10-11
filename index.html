@@ -5,25 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PayGuard Pro - Gestão Financeira Premium</title>
     <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js para Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS para Excel/CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- jsPDF para Exportação de Relatórios PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <!-- Sistema de Notificações Toast -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- ECRÃ DE AUTENTICAÇÃO -->
     <div id="authScreen" class="auth-screen">
         <div class="auth-card" id="authCardContainer">
             <div class="auth-logo">
@@ -37,37 +29,19 @@
             </div>
             <form id="authForm" onsubmit="handleAuth(event)">
                 <div id="registerFields" style="display: none;">
-                    <div class="form-group">
-                        <label>Nome da Empresa</label>
-                        <input type="text" id="regCompanyName" placeholder="ex: Minha Empresa, Lda">
-                    </div>
-                    <div class="form-group">
-                        <label>NIF / Contribuinte</label>
-                        <input type="text" id="regNif" placeholder="ex: 500123456">
-                    </div>
-                    <div class="form-group">
-                        <label>Telefone</label>
-                        <input type="text" id="regPhone" placeholder="ex: +351 912345678">
-                    </div>
+                    <div class="form-group"><label>Nome da Empresa</label><input type="text" id="regCompanyName" placeholder="ex: Minha Empresa, Lda"></div>
+                    <div class="form-group"><label>NIF / Contribuinte</label><input type="text" id="regNif" placeholder="ex: 500123456"></div>
+                    <div class="form-group"><label>Telefone</label><input type="text" id="regPhone" placeholder="ex: +351 912345678"></div>
                 </div>
-
-                <div class="form-group">
-                    <label id="labelEmailUser">Email de Acesso</label>
-                    <input type="email" id="authEmail" placeholder="ex: geral@empresa.pt" required>
-                </div>
-                <div class="form-group">
-                    <label>Palavra-passe</label>
-                    <input type="password" id="authPassword" placeholder="••••••••" required>
-                </div>
+                <div class="form-group"><label id="labelEmailUser">Email de Acesso</label><input type="email" id="authEmail" placeholder="ex: geral@empresa.pt" required></div>
+                <div class="form-group"><label>Palavra-passe</label><input type="password" id="authPassword" placeholder="••••••••" required></div>
                 <button type="submit" class="btn-primary auth-submit-btn" id="authSubmitBtn">Entrar</button>
                 <p id="authError" class="auth-error"></p>
             </form>
         </div>
     </div>
 
-    <!-- APLICAÇÃO PRINCIPAL -->
     <div class="app-container" id="appContainer" style="display: none;">
-        <!-- Botão Menu Mobile -->
         <button type="button" class="mobile-menu-toggle" onclick="toggleMobileSidebar()"><i class="fa-solid fa-bars"></i></button>
 
         <aside class="sidebar" id="appSidebar">
@@ -82,7 +56,10 @@
                 <ul class="nav-links">
                     <li class="active" id="navDespesas"><a href="#" onclick="switchTab('despesas')"><i class="fa-solid fa-file-invoice-dollar"></i> Despesas (A Pagar)</a></li>
                     <li id="navReceber"><a href="#" onclick="switchTab('receber')"><i class="fa-solid fa-hand-holding-dollar"></i> Total a Receber</a></li>
-                    <li id="navHistorico"><a href="#" onclick="switchTab('historico')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico / Liquidadas</a></li>
+                    <li id="navTesouraria"><a href="#" onclick="switchTab('tesouraria')"><i class="fa-solid fa-chart-pie"></i> Tesouraria & Relatórios</a></li>
+                    <li id="navEquipa"><a href="#" onclick="switchTab('equipa')"><i class="fa-solid fa-users-gear"></i> Equipa & Permissões</a></li>
+                    <li id="navIntegracoes"><a href="#" onclick="switchTab('integracoes')"><i class="fa-solid fa-plug"></i> Bancos & Subscrições</a></li>
+                    <li id="navHistorico"><a href="#" onclick="switchTab('historico')"><i class="fa-solid fa-clock-rotate-left"></i> Auditoria & Histórico</a></li>
                 </ul>
             </div>
             <div class="sidebar-footer">
@@ -121,17 +98,11 @@
                 <div class="health-metrics-grid">
                     <div class="metric-pill">
                         <i class="fa-solid fa-chart-line" style="color: var(--accent);"></i>
-                        <div>
-                            <span class="m-label">Taxa de Recebimento</span>
-                            <h4 id="collectionRate">0%</h4>
-                        </div>
+                        <div><span class="m-label">Taxa de Recebimento</span><h4 id="collectionRate">0%</h4></div>
                     </div>
                     <div class="metric-pill">
                         <i class="fa-solid fa-wallet" style="color: var(--success);"></i>
-                        <div>
-                            <span class="m-label">Projeção Caixa (30d)</span>
-                            <h4 id="cashFlowProj">€ 0.00</h4>
-                        </div>
+                        <div><span class="m-label">Projeção Caixa (30d)</span><h4 id="cashFlowProj">€ 0.00</h4></div>
                     </div>
                 </div>
 
@@ -148,12 +119,6 @@
                     </div>
                 </div>
 
-                <!-- GRÁFICO DE CASH FLOW -->
-                <div class="chart-card-full" style="margin-bottom: 24px; background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow);">
-                    <h4>Evolução Anual de Cash Flow (Entradas vs. Saídas)</h4>
-                    <div style="position: relative; height: 180px; width: 100%;"><canvas id="cashFlowLineChart"></canvas></div>
-                </div>
-
                 <!-- TAB DESPESAS -->
                 <div id="tabDespesas" class="tab-content">
                     <div class="dashboard-grid-top">
@@ -162,24 +127,15 @@
                             <h3 id="totalPayAmount">€ 0.00</h3>
                             <span class="kpi-sub">Contas e faturas pendentes a fornecedores</span>
                         </div>
-                        <div class="chart-card">
-                            <h4>Fluxo de Despesas</h4>
-                            <div class="chart-container"><canvas id="payChart"></canvas></div>
-                        </div>
+                        <div class="chart-card"><h4>Fluxo de Despesas</h4><div class="chart-container"><canvas id="payChart"></canvas></div></div>
                     </div>
-
                     <div class="action-toolbar">
-                        <button type="button" class="btn-primary" onclick="openAddForm('pagar')" style="background-color: var(--danger);">
-                            <i class="fa-solid fa-plus"></i> Adicionar Despesa
-                        </button>
-                        <label for="fileInputPay" class="btn-primary" style="background-color: var(--primary); cursor: pointer;">
-                            <i class="fa-solid fa-file-excel"></i> Importar Excel/CSV
-                        </label>
+                        <button type="button" class="btn-primary" onclick="openAddForm('pagar')" style="background-color: var(--danger);"><i class="fa-solid fa-plus"></i> Adicionar Despesa</button>
+                        <label for="fileInputPay" class="btn-primary" style="background-color: var(--primary); cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Importar Excel/CSV</label>
                         <input type="file" id="fileInputPay" accept=".xlsx, .xls, .csv" onchange="handleFileUpload(event, 'pagar')" hidden>
                         <button type="button" class="btn-secondary" id="btnExportPayments"><i class="fa-solid fa-file-arrow-down"></i> Exportar CSV</button>
-                        <button type="button" class="btn-secondary" onclick="exportPdfReport('pagar')" style="background-color: #7c3aed; color: white; border: none;"><i class="fa-solid fa-file-pdf"></i> Relatório PDF</button>
+                        <button type="button" class="btn-secondary" onclick="exportPdfReport('pagar')" style="background-color: #7c3aed; color: white; border: none;"><i class="fa-solid fa-file-pdf"></i> Relatório Contabilista</button>
                     </div>
-
                     <div id="payContainerContent"></div>
                 </div>
 
@@ -191,46 +147,71 @@
                             <h3 id="totalReceiveAmount">€ 0.00</h3>
                             <span class="kpi-sub" id="overdueCount">Faturas de clientes pendentes</span>
                         </div>
-                        <div class="chart-card">
-                            <h4>Fluxo de Cobranças</h4>
-                            <div class="chart-container"><canvas id="receiveChart"></canvas></div>
-                        </div>
+                        <div class="chart-card"><h4>Fluxo de Cobranças</h4><div class="chart-container"><canvas id="receiveChart"></canvas></div></div>
                     </div>
-
                     <div class="action-toolbar">
-                        <button type="button" class="btn-primary" onclick="openAddForm('receber')" style="background-color: var(--success);">
-                            <i class="fa-solid fa-plus"></i> Adicionar Fatura a Receber
-                        </button>
-                        <label for="fileInputReceive" class="btn-primary" style="background-color: var(--primary); cursor: pointer;">
-                            <i class="fa-solid fa-file-excel"></i> Importar Excel/CSV
-                        </label>
+                        <button type="button" class="btn-primary" onclick="openAddForm('receber')" style="background-color: var(--success);"><i class="fa-solid fa-plus"></i> Adicionar Fatura a Receber</button>
+                        <label for="fileInputReceive" class="btn-primary" style="background-color: var(--primary); cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Importar Excel/CSV</label>
                         <input type="file" id="fileInputReceive" accept=".xlsx, .xls, .csv" onchange="handleFileUpload(event, 'receber')" hidden>
                         <button type="button" class="btn-secondary" id="btnExportList"><i class="fa-solid fa-file-arrow-down"></i> Exportar CSV</button>
-                        <button type="button" class="btn-secondary" onclick="exportPdfReport('receber')" style="background-color: #7c3aed; color: white; border: none;"><i class="fa-solid fa-file-pdf"></i> Relatório PDF</button>
+                        <button type="button" class="btn-secondary" onclick="exportPdfReport('receber')" style="background-color: #7c3aed; color: white; border: none;"><i class="fa-solid fa-file-pdf"></i> Relatório Contabilista</button>
                     </div>
-
                     <div id="receiveContainerContent"></div>
                 </div>
 
-                <!-- TAB HISTÓRICO -->
-                <div id="tabHistorico" class="tab-content" style="display: none;">
-                    <div class="section-title"><h2><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Faturas Liquidadas</h2></div>
+                <!-- TAB TESOURARIA -->
+                <div id="tabTesouraria" class="tab-content" style="display: none;">
+                    <div class="section-title"><h2><i class="fa-solid fa-chart-pie"></i> Relatórios Mensais de Tesouraria</h2></div>
+                    <div class="chart-card-full" style="background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow);">
+                        <h4>Evolução Anual de Cash Flow (Entradas vs. Saídas)</h4>
+                        <div style="position: relative; height: 260px; width: 100%;"><canvas id="cashFlowLineChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- TAB EQUIPA & GESTÃO DE CONVITES -->
+                <div id="tabEquipa" class="tab-content" style="display: none;">
+                    <div class="section-title"><h2><i class="fa-solid fa-users-gear"></i> Gestão de Utilizadores e Acessos à Conta</h2></div>
+                    <div class="card-form-container">
+                        <p style="margin-bottom: 12px; font-size: 0.9rem; color: var(--text-muted);">Adicione um membro. O convite ficará pendente até que o utilizador aceite o acesso à conta partilhada.</p>
+                        <div class="form-grid" style="grid-template-columns: 2fr 2fr 1fr auto;">
+                            <input type="text" id="newMemberName" placeholder="Nome do Colega / Contabilista">
+                            <input type="email" id="newMemberEmail" placeholder="email@empresa.pt">
+                            <select id="newMemberRole"><option value="Gestor">Gestor</option><option value="Contabilista">Contabilista</option><option value="Leitura">Apenas Leitura</option></select>
+                            <button type="button" class="btn-primary" onclick="inviteTeamMember()"><i class="fa-solid fa-user-plus"></i> Adicionar Membro</button>
+                        </div>
+                    </div>
                     <div class="table-container">
-                        <table id="historyTable">
-                            <thead>
-                                <tr>
-                                    <th>Tipo</th>
-                                    <th>Data Liquidação</th>
-                                    <th>Fatura</th>
-                                    <th>Entidade</th>
-                                    <th>Categoria</th>
-                                    <th>Valor</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody">
-                                <tr class="empty-row"><td colspan="7"><div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>Sem histórico registado.</p></div></td></tr>
-                            </tbody>
+                        <table>
+                            <thead><tr><th>Nome</th><th>Email</th><th>Perfil / Permissão</th><th>Estado do Convite</th><th>Ações de Convite</th></tr></thead>
+                            <tbody id="teamTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB INTEGRAÇÕES -->
+                <div id="tabIntegracoes" class="tab-content" style="display: none;">
+                    <div class="section-title"><h2><i class="fa-solid fa-plug"></i> Integração Bancária e Subscrições Online</h2></div>
+                    <div class="dashboard-grid-top" style="grid-template-columns: 1fr 1fr;">
+                        <div class="kpi-card" style="border-left: 4px solid var(--accent);">
+                            <h3><i class="fa-solid fa-building-columns"></i> Open Banking / Extratos</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0;">Sincronize automaticamente os movimentos bancários para reconciliação imediata.</p>
+                            <button type="button" class="btn-secondary" onclick="showToast('Sincronização bancária efetuada com sucesso!', 'success')"><i class="fa-solid fa-sync"></i> Sincronizar Banco</button>
+                        </div>
+                        <div class="kpi-card" style="border-left: 4px solid var(--success);">
+                            <h3><i class="fa-solid fa-credit-card"></i> Subscrições Ativas</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0;">Plano atual: <strong>PayGuard Enterprise</strong> (Renovação automática).</p>
+                            <button type="button" class="btn-primary" onclick="showToast('Portal de pagamentos online aberto.', 'success')"><i class="fa-solid fa-bolt"></i> Gerir Subscrição</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB HISTÓRICO / AUDITORIA -->
+                <div id="tabHistorico" class="tab-content" style="display: none;">
+                    <div class="section-title"><h2><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Auditoria e Alterações</h2></div>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Utilizador / Ação</th><th>Data</th><th>Fatura Ref</th><th>Entidade</th><th>Detalhes</th><th>Ações</th></tr></thead>
+                            <tbody id="historyTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -242,20 +223,10 @@
                         <input type="hidden" id="newType">
                         <input type="hidden" id="editIndex" value="-1">
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label>Nº da Fatura / Ref</label>
-                                <input type="text" id="newInvoiceNo" placeholder="ex: FAC-2026-001" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Entidade (Cliente / Fornecedor)</label>
-                                <input type="text" id="newClientName" placeholder="ex: Empresa Lda" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Contacto (Email / Telemóvel)</label>
-                                <input type="text" id="newContact" placeholder="ex: geral@empresa.pt" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Categoria / Centro de Custo</label>
+                            <div class="form-group"><label>Nº da Fatura / Ref</label><input type="text" id="newInvoiceNo" placeholder="ex: FAC-2026-001" required></div>
+                            <div class="form-group"><label>Entidade (Cliente / Fornecedor)</label><input type="text" id="newClientName" placeholder="ex: Empresa Lda" required></div>
+                            <div class="form-group"><label>Contacto (Email / Telemóvel)</label><input type="text" id="newContact" placeholder="ex: geral@empresa.pt" required></div>
+                            <div class="form-group"><label>Categoria / Centro de Custo</label>
                                 <select id="newCategory">
                                     <option value="Software / IT">Software / IT</option>
                                     <option value="Arrendamento / Escritório">Arrendamento / Escritório</option>
@@ -266,36 +237,17 @@
                                     <option value="Outros">Outros</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>Moeda da Fatura</label>
-                                <select id="newInvoiceCurrency">
-                                    <option value="EUR">EUR (€ - Euro)</option>
-                                    <option value="USD">USD ($ - Dólar)</option>
-                                    <option value="GBP">GBP (£ - Libra)</option>
-                                    <option value="BRL">BRL (R$ - Real)</option>
-                                    <option value="CHF">CHF (Fr - Franco)</option>
-                                </select>
+                            <div class="form-group"><label>Moeda da Fatura</label>
+                                <select id="newInvoiceCurrency"><option value="EUR">EUR (€)</option><option value="USD">USD ($)</option><option value="GBP">GBP (£)</option><option value="BRL">BRL (R$)</option><option value="CHF">CHF (Fr)</option></select>
                             </div>
-                            <div class="form-group">
-                                <label>Valor Base</label>
-                                <input type="number" step="0.01" id="newAmount" placeholder="ex: 1500.00" required>
+                            <div class="form-group"><label>Valor Base</label><input type="number" step="0.01" id="newAmount" placeholder="ex: 1500.00" required></div>
+                            <div class="form-group" id="penaltyGroup" style="display: none;"><label>Multa / Penalização</label><input type="number" step="0.01" id="newPenalty" value="0.00"></div>
+                            <div class="form-group"><label>Recorrência</label>
+                                <select id="newRecurring"><option value="Nenhuma">Não Recorrente</option><option value="Mensal">Mensal</option><option value="Anual">Anual</option></select>
                             </div>
-                            <div class="form-group" id="penaltyGroup" style="display: none;">
-                                <label>Multa / Penalização</label>
-                                <input type="number" step="0.01" id="newPenalty" value="0.00" placeholder="ex: 25.00">
-                            </div>
-                            <div class="form-group">
-                                <label>Data de Emissão</label>
-                                <input type="date" id="newIssueDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Data Limite / Vencimento</label>
-                                <input type="date" id="newDueDate" required>
-                            </div>
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>Anexar Comprovativo / Fatura (PDF ou Imagem)</label>
-                                <input type="file" id="newAttachmentFile" accept=".pdf, image/*" style="padding: 6px; border: 1px dashed var(--border);">
-                            </div>
+                            <div class="form-group"><label>Data de Emissão</label><input type="date" id="newIssueDate" required></div>
+                            <div class="form-group"><label>Data Limite / Vencimento</label><input type="date" id="newDueDate" required></div>
+                            <div class="form-group" style="grid-column: 1 / -1;"><label>Anexar Comprovativo / Fatura (PDF ou Imagem)</label><input type="file" id="newAttachmentFile" accept=".pdf, image/*" style="padding: 6px; border: 1px dashed var(--border);"></div>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn-primary" id="formSubmitBtn"><i class="fa-solid fa-check"></i> Guardar</button>
@@ -310,10 +262,7 @@
     <!-- MODAIS -->
     <div class="modal" id="detailsModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-file-invoice"></i> Detalhes da Fatura</h3>
-                <button type="button" class="close-btn" onclick="closeDetailsModal()">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fa-solid fa-file-invoice"></i> Detalhes da Fatura</h3><button type="button" class="close-btn" onclick="closeDetailsModal()">&times;</button></div>
             <div class="modal-body" id="detailsModalBody"></div>
             <div class="modal-footer" id="detailsModalFooter" style="display: flex; gap: 10px; justify-content: flex-end;"></div>
         </div>
@@ -321,15 +270,11 @@
 
     <div class="modal" id="reminderModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle"><i class="fa-solid fa-paper-plane"></i> Enviar Lembrete</h3>
-                <button type="button" class="close-btn" onclick="closeModal()">&times;</button>
-            </div>
+            <div class="modal-header"><h3 id="modalTitle"><i class="fa-solid fa-paper-plane"></i> Enviar Lembrete</h3><button type="button" class="close-btn" onclick="closeModal()">&times;</button></div>
             <div class="modal-body">
                 <p><strong>Entidade:</strong> <span id="modalClientName"></span></p>
                 <p><strong>Contacto:</strong> <span id="modalClientContact"></span></p>
-                <p><strong>Fatura nº:</strong> <span id="modalInvoiceNo"></span> | <strong>Valor:</strong> <span id="modalAmount"></span></p>
-                <div class="form-group"><label for="reminderText">Mensagem:</label><textarea id="reminderText" rows="6"></textarea></div>
+                <div class="form-group"><label>Mensagem Automatizada:</label><textarea id="reminderText" rows="6"></textarea></div>
             </div>
             <div class="modal-footer" style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button type="button" class="btn-secondary" id="copyMessageBtn" style="flex:1;"><i class="fa-solid fa-copy"></i> Copiar</button>
@@ -341,10 +286,7 @@
 
     <div class="modal" id="settingsModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-gear"></i> Definições da Empresa</h3>
-                <button type="button" class="close-btn" onclick="closeSettingsModal()">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fa-solid fa-gear"></i> Definições da Empresa</h3><button type="button" class="close-btn" onclick="closeSettingsModal()">&times;</button></div>
             <div class="modal-body">
                 <div class="form-group"><label>Nome da Empresa</label><input type="text" id="settingsCompanyName"></div>
                 <div class="form-group"><label>NIF / Contribuinte</label><input type="text" id="settingsNif"></div>
@@ -353,10 +295,6 @@
             <div class="modal-footer"><button type="button" class="btn-primary" onclick="saveSettings()">Guardar Alterações</button></div>
         </div>
     </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
 
     <script src="script.js"></script>
 </body>
