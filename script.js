@@ -232,7 +232,7 @@ async function logAuditAction(action, invoiceNo, clientName, details) {
     });
 }
 
-// ADICIONAR E CONVIDAR MEMBRO DA EQUIPA COM ESTADOS INTERATIVOS
+// ENVIO DE CONVITE AUTOMÁTICO VIA EMAILJS
 async function inviteTeamMember() {
     const name = document.getElementById('newMemberName').value.trim();
     const email = document.getElementById('newMemberEmail').value.trim();
@@ -243,6 +243,7 @@ async function inviteTeamMember() {
         return;
     }
 
+    // 1. Guardar na base de dados com estado Pendente
     await db.collection('team').add({
         userId: currentUser,
         name,
@@ -251,32 +252,47 @@ async function inviteTeamMember() {
         status: 'Pendente'
     });
 
-    logAuditAction('Convite Equipa', 'N/A', name, `Convidou ${email} como ${role}`);
-    showToast('Membro adicionado! Convite enviado por email.', 'success');
+    logAuditAction('Equipa', 'N/A', name, `Convidou ${email} como ${role}`);
 
-    const companyName = currentProfile ? currentProfile.companyName : 'nossa empresa';
-    const subject = encodeURIComponent(`Convite para aceder ao PayGuard Pro (${companyName})`);
-    const body = encodeURIComponent(
-        `Olá ${name},\n\nFoste convidado(a) para aceder à tesouraria da ${companyName} no PayGuard Pro como ${role}.\n\nPara aceder, entra na plataforma (${window.location.origin}) com o email ${email}.\n\nCumprimentos,\nEquipa ${companyName}`
-    );
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    // 2. Parâmetros para o EmailJS
+    const templateParams = {
+        to_name: name,
+        to_email: email,
+        role: role,
+        company_name: currentProfile ? currentProfile.companyName : 'Empresa',
+        app_url: window.location.origin
+    };
+
+    // 3. Enviar email automático sem abrir janelas
+    emailjs.send('O_TEU_SERVICE_ID', 'O_TEU_TEMPLATE_ID', templateParams)
+        .then(function(response) {
+            showToast('Convite enviado por email com sucesso!', 'success');
+            fetchUserData();
+        }, function(error) {
+            showToast('Membro guardado, mas falhou o envio do email.', 'error');
+            console.error('Erro EmailJS:', error);
+        });
 
     document.getElementById('newMemberName').value = '';
     document.getElementById('newMemberEmail').value = '';
-    fetchUserData();
 }
 
-// FUNÇÕES PARA O MEMBRO ACEITAR OU RECUSAR O CONVITE NA TABELA
 async function acceptTeamInvite(id) {
     await db.collection('team').doc(id).update({ status: 'Ativo' });
-    showToast('Convite aceite com sucesso! Utilizador integrado na conta.', 'success');
+    showToast('Convite aceite com sucesso!', 'success');
     fetchUserData();
 }
 
 async function rejectTeamInvite(id) {
-    if (confirm('Tem a certeza que deseja recusar/remover este convite?')) {
+    await db.collection('team').doc(id).update({ status: 'Recusado' });
+    showToast('Convite marcado como recusado.', 'error');
+    fetchUserData();
+}
+
+async function deleteTeamMember(id) {
+    if (confirm('Tem a certeza que deseja remover este membro?')) {
         await db.collection('team').doc(id).delete();
-        showToast('Convite recusado e removido.', 'error');
+        showToast('Membro removido.', 'error');
         fetchUserData();
     }
 }
@@ -471,7 +487,10 @@ async function renderTeamTable() {
     const tbody = document.getElementById('teamTableBody');
     tbody.innerHTML = '';
     teamData.forEach(m => {
-        const badgeClass = m.status === 'Ativo' ? 'status-ok' : 'status-overdue';
+        let badgeClass = 'status-overdue';
+        if (m.status === 'Ativo') badgeClass = 'status-ok';
+        else if (m.status === 'Recusado') badgeClass = 'status-overdue';
+
         tbody.innerHTML += `
             <tr>
                 <td>${m.name}</td>
@@ -480,8 +499,9 @@ async function renderTeamTable() {
                 <td><span class="status-badge ${badgeClass}">${m.status}</span></td>
                 <td>
                     <div class="action-buttons">
-                        ${m.status !== 'Ativo' ? `<button type="button" class="btn-action btn-pay" onclick="acceptTeamInvite('${m.id}')" title="Aceitar"><i class="fa-solid fa-check"></i> Aceitar</button>` : ''}
-                        <button type="button" class="btn-action btn-delete" onclick="rejectTeamInvite('${m.id}')" title="Recusar / Remover"><i class="fa-solid fa-xmark"></i> ${m.status === 'Ativo' ? 'Remover' : 'Recusar'}</button>
+                        ${m.status !== 'Ativo' ? `<button type="button" class="btn-action btn-pay" onclick="acceptTeamInvite('${m.id}')" title="Aceitar"><i class="fa-solid fa-check"></i></button>` : ''}
+                        ${m.status !== 'Recusado' ? `<button type="button" class="btn-action btn-delete" onclick="rejectTeamInvite('${m.id}')" title="Recusar" style="background:#fee2e2; color:#dc2626;"><i class="fa-solid fa-xmark"></i></button>` : ''}
+                        <button type="button" class="btn-action btn-delete" onclick="deleteTeamMember('${m.id}')" title="Remover"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </td>
             </tr>`;
