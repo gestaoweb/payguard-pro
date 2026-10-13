@@ -12,13 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <!-- SDK do EmailJS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          emailjs.init("A_TUA_PUBLIC_KEY"); // Substitui pela tua Public Key do EmailJS
-       })();
-    </script>
 </head>
 <body>
     <div id="toastContainer" class="toast-container"></div>
@@ -175,21 +168,21 @@
                     </div>
                 </div>
 
-                <!-- TAB EQUIPA & GESTÃO DE CONVITES -->
+                <!-- TAB EQUIPA & CONVITE INSTANTÂNEO -->
                 <div id="tabEquipa" class="tab-content" style="display: none;">
                     <div class="section-title"><h2><i class="fa-solid fa-users-gear"></i> Gestão de Utilizadores e Acessos</h2></div>
                     <div class="card-form-container">
-                        <p style="margin-bottom: 12px; font-size: 0.9rem; color: var(--text-muted);">Adicione um membro. O email de convite será enviado automaticamente.</p>
+                        <p style="margin-bottom: 12px; font-size: 0.9rem; color: var(--text-muted);">Adicione um membro. A mensagem de convite (com link de acesso e opções de Sim/Não) é copiada automaticamente para a sua área de transferência.</p>
                         <div class="form-grid" style="grid-template-columns: 2fr 2fr 1fr auto;">
                             <input type="text" id="newMemberName" placeholder="Nome do Colega / Contabilista">
                             <input type="email" id="newMemberEmail" placeholder="email@empresa.pt">
                             <select id="newMemberRole"><option value="Gestor">Gestor</option><option value="Contabilista">Contabilista</option><option value="Leitura">Apenas Leitura</option></select>
-                            <button type="button" class="btn-primary" onclick="inviteTeamMember()"><i class="fa-solid fa-paper-plane"></i> Enviar Convite</button>
+                            <button type="button" class="btn-primary" onclick="inviteTeamMember()"><i class="fa-solid fa-copy"></i> Adicionar e Copiar Convite</button>
                         </div>
                     </div>
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>Nome</th><th>Email</th><th>Perfil / Permissão</th><th>Estado do Convite</th><th>Ações</th></tr></thead>
+                            <thead><tr><th>Nome</th><th>Email</th><th>Perfil / Permissão</th><th>Estado do Convite</th><th>Ações de Controlo</th></tr></thead>
                             <tbody id="teamTableBody"></tbody>
                         </table>
                     </div>
